@@ -4,6 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { envs } from '../config/envs.config';
+import { BooksModule } from './books/books.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { envs } from '../config/envs.config';
       autoSchemaFile: true,
     }),
     UsersModule,
+    BooksModule,
   ],
 })
 export class AppModule {}
