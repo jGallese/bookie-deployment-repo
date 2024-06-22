@@ -2,6 +2,7 @@ import { Date, Schema as MongooseSchema } from 'mongoose';
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
+import { isNullableType } from 'graphql';
 
 @ObjectType()
 @Schema()
@@ -14,11 +15,11 @@ export class User {
   username: string;
 
   @Prop()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   name: string;
 
   @Prop()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   lastname: string;
 
   @Prop()
@@ -27,10 +28,10 @@ export class User {
   pass: string;
 
   @Prop({ type: Date })
-  @Field(() => GraphQLISODateTime)
+  @Field(() => GraphQLISODateTime, { nullable: true })
   birthDate: Date;
 
-  @Prop()
+  @Prop({unique: [true, 'Duplicate Email entered']})
   @Field(() => String)
   email: string;
 
