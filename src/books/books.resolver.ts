@@ -19,13 +19,23 @@ export class BooksResolver {
   }
 
   @Query(() => Book, { name: 'book' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
+  findOne(@Args('id', { type: () => String }) id: string) {
     return this.booksService.findOne(id);
   }
 
   @Query(() => [Book])
   async searchBooks(@Args('query') query: string) {
     return this.booksService.searchBooks(query);
+  }
+
+  @Query(() => [Book])
+  async searchBooksByGender(@Args('query') query: string) {
+    return this.booksService.searchBooksByGender(query);
+  }
+
+  @Query(() => [Book])
+  async searchBooksByAuthor(@Args('query') query: string) {
+    return this.booksService.searchBooksByAuthor(query);
   }
 
   @Mutation(() => Book)

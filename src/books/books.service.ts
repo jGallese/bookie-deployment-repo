@@ -11,18 +11,7 @@ export class BooksService {
     this.googleBooksApiKey = envs.GOOGLE_BOOKS_APIKEY;
   }
 
-  create(createBookInput: CreateBookInput) {
-    return 'This action adds a new book';
-  }
-
-  findAll() {
-    return `This action returns all books`;
-  }
-
-  async searchBooks(query: string) {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
-    );
+  async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
     return data.items.map((item) => ({
       _id: item.id,
@@ -33,8 +22,58 @@ export class BooksService {
     }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  create(createBookInput: CreateBookInput) {
+    return 'This action adds a new book';
+  }
+
+  findAll() {
+    return `This action returns all books`;
+  }
+
+  async searchBooks(query: string) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
+      );
+      return await this.mapDataItemsToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async searchBooksByGender(gender: string) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=+subject:${gender}&key=${this.googleBooksApiKey}`,
+      );
+
+      return await this.mapDataItemsToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async searchBooksByAuthor(author: string) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${author}&key=${this.googleBooksApiKey}`,
+      );
+
+      return await this.mapDataItemsToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async findOne(id: string) {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/books/v1/volumes/${id}?key=${this.googleBooksApiKey}`,
+      );
+      return await this.mapDataItemsToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   update(id: number, updateBookInput: UpdateBookInput) {
