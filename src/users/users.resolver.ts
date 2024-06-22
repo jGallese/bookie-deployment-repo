@@ -44,7 +44,7 @@ export class UsersResolver {
     return this.usersService.signup(signUpDto)
   }
 
-  @Query(() => UserToken, { name: 'login' })
+  @Mutation(() => UserToken, { name: 'login' })
   login(@Args('loginDto') LoginDto: LoginDto){
     return this.usersService.login(LoginDto)
   }
