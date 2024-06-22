@@ -4,6 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { envs } from '../config/envs.config';
+import { BooksModule } from './books/books.module';
 import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
@@ -16,6 +17,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
       autoSchemaFile: true,
     }),
     UsersModule,
+    BooksModule,
   ],
   providers: [JwtStrategy],
 })
