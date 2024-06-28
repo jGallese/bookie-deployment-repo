@@ -71,4 +71,31 @@ export class UsersService {
     return { user, token};
 
   }
+
+  async getMyUser(context) {
+    const authorization = context.req.headers.authorization;
+    if (!authorization) {
+      throw new UnauthorizedException('No authorization header');
+    }
+
+    const token = authorization.replace('Bearer ', '');
+    try {
+
+      // Decodificar el token
+      const decoded: any = this.jwtService.verify(token);
+      console.log(decoded);
+      const idUser = decoded.sub;
+
+      // Buscar el usuario en la base de datos
+      const user = await this.userModel.findOne({ _id: idUser }).exec();
+
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return user;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
