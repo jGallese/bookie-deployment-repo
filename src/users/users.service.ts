@@ -83,7 +83,6 @@ export class UsersService {
 
       // Decodificar el token
       const decoded: any = this.jwtService.verify(token);
-      console.log(decoded);
       const idUser = decoded.sub;
 
       // Buscar el usuario en la base de datos
