@@ -10,7 +10,7 @@ export class User {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop()
+  @Prop({unique: [true, 'Duplicate Username entered']})
   @Field(() => String)
   username: string;
 

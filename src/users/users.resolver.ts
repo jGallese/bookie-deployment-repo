@@ -30,11 +30,6 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
-  }
-
-  @Mutation(() => User)
   removeUser(@Args('id', { type: () => Int }) id: number) {
     return this.usersService.remove(id);
   }
@@ -52,7 +47,12 @@ export class UsersResolver {
   @Query(() => User, { name: 'myUser' })
   @UseGuards(GqlAuthGuard)
   getMyUser(@Context() context) {
-    
     return this.usersService.getMyUser(context)
+  }
+
+  @Mutation(() => User, { name: 'updateMyUser' })
+  @UseGuards(GqlAuthGuard)
+  updateMyUser(@Args('updateUserInput') updateUserInput: UpdateUserInput, @Context() context) {
+    return this.usersService.updateMyUser(updateUserInput, context)
   }
 }

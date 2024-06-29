@@ -97,4 +97,10 @@ export class UsersService {
       throw new UnauthorizedException('Invalid token');
     }
   }
+
+  async updateMyUser(updateUserInput: UpdateUserInput, context) {
+    const user = await this.getMyUser(context);
+    const updatedUser = await this.userModel.findByIdAndUpdate(user._id, updateUserInput, { new: true, runValidators: true});
+    return updatedUser;
+  }
 }
