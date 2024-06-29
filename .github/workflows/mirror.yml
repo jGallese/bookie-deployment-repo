@@ -1,0 +1,21 @@
+name: Mirror Repository
+
+on:
+  push:
+    branches:
+      - main  # Reemplaza con la rama que quieras espejar
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Push to mirror
+        run: |
+          git remote add mirror https://github.com/jGallese/bookie-deployment-repo
+          git push mirror main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
