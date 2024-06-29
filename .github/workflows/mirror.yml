@@ -18,4 +18,4 @@ jobs:
           git remote add mirror https://github.com/jGallese/bookie-deployment-repo
           git push mirror main
         env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOY_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
