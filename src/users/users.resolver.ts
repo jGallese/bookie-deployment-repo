@@ -35,24 +35,27 @@ export class UsersResolver {
   }
 
   @Mutation(() => UserToken, { name: 'signup' })
-  signup(@Args('signUpDto') signUpDto: SignUpDto){
-    return this.usersService.signup(signUpDto)
+  signup(@Args('signUpDto') signUpDto: SignUpDto) {
+    return this.usersService.signup(signUpDto);
   }
 
   @Mutation(() => UserToken, { name: 'login' })
-  login(@Args('loginDto') LoginDto: LoginDto){
-    return this.usersService.login(LoginDto)
+  login(@Args('loginDto') LoginDto: LoginDto) {
+    return this.usersService.login(LoginDto);
   }
 
   @Query(() => User, { name: 'myUser' })
-  @UseGuards(GqlAuthGuard)
+  //@UseGuards(GqlAuthGuard) -> lo comentamos porque no muestra bien la especificacion de los errores
   getMyUser(@Context() context) {
-    return this.usersService.getMyUser(context)
+    return this.usersService.getMyUser(context);
   }
 
   @Mutation(() => User, { name: 'updateMyUser' })
   @UseGuards(GqlAuthGuard)
-  updateMyUser(@Args('updateUserInput') updateUserInput: UpdateUserInput, @Context() context) {
-    return this.usersService.updateMyUser(updateUserInput, context)
+  updateMyUser(
+    @Args('updateUserInput') updateUserInput: UpdateUserInput,
+    @Context() context,
+  ) {
+    return this.usersService.updateMyUser(updateUserInput, context);
   }
 }
