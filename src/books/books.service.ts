@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { envs } from 'config/envs.config';
+import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BooksService {
@@ -11,14 +12,17 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
-    return data.items.map((item) => ({
-      _id: item.id,
-      title: item.volumeInfo.title,
-      authors: item.volumeInfo.authors,
-      description: item.volumeInfo.description,
-      image: item.volumeInfo.imageLinks,
-      categories: item.volumeInfo.categories[0],
-    }));
+    return data.items.map(
+      (item) =>
+        new Book(
+          item.id,
+          item.volumeInfo.title,
+          item.volumeInfo.authors,
+          item.volumeInfo.description,
+          item.volumeInfo.imageLinks,
+          item.volumeInfo.categories[0],
+        ),
+    );
   }
 
   async searchBooksByName(query: string) {
@@ -62,17 +66,15 @@ export class BooksService {
         `https://www.googleapis.com/books/v1/volumes/${id}?key=${this.googleBooksApiKey}`,
       );
       const data = await response.json();
-      console.log(data);
-      const bookToReturn = {
-        _id: data.id,
-        title: data.volumeInfo.title,
-        authors: data.volumeInfo.title,
-        description: data.volumeInfo.description,
-        image: data.volumeInfo.imageLinks,
-        categories: data.volumeInfo.categories[0],
-      };
-      console.log(bookToReturn);
-      return bookToReturn;
+
+      return new Book(
+        data.id,
+        data.volumeInfo.title,
+        data.volumeInfo.authors,
+        data.volumeInfo.description,
+        data.volumeInfo.imageLinks,
+        data.volumeInfo.categories[0],
+      );
     } catch (error) {
       throw new Error(error);
     }
