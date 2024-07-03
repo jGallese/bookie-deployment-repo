@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBookInput } from './dto/create-book.input';
-import { UpdateBookInput } from './dto/update-book.input';
 import { envs } from 'config/envs.config';
 
 @Injectable()
@@ -19,18 +17,11 @@ export class BooksService {
       authors: item.volumeInfo.authors,
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
+      categories: item.volumeInfo.categories[0],
     }));
   }
 
-  create(createBookInput: CreateBookInput) {
-    return 'This action adds a new book';
-  }
-
-  findAll() {
-    return `This action returns all books`;
-  }
-
-  async searchBooks(query: string) {
+  async searchBooksByName(query: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
@@ -70,17 +61,20 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes/${id}?key=${this.googleBooksApiKey}`,
       );
-      return await this.mapDataItemsToReturn(response);
+      const data = await response.json();
+      console.log(data);
+      const bookToReturn = {
+        _id: data.id,
+        title: data.volumeInfo.title,
+        authors: data.volumeInfo.title,
+        description: data.volumeInfo.description,
+        image: data.volumeInfo.imageLinks,
+        categories: data.volumeInfo.categories[0],
+      };
+      console.log(bookToReturn);
+      return bookToReturn;
     } catch (error) {
       throw new Error(error);
     }
-  }
-
-  update(id: number, updateBookInput: UpdateBookInput) {
-    return `This action updates a #${id} book`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} book`;
   }
 }

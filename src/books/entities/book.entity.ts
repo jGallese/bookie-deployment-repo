@@ -35,6 +35,10 @@ export class Book {
   @Prop()
   @Field(() => BookImage, { nullable: true })
   image?: BookImage;
+
+  @Prop()
+  @Field(() => String, { nullable: true })
+  categories?: string;
 }
 
 export type UserDocument = Book & Document;
