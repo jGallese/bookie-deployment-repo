@@ -2,7 +2,8 @@ import { Date, Schema as MongooseSchema } from 'mongoose';
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
-import { isNullableType } from 'graphql';
+import {Interest} from './interest.entity';
+import { type } from 'os';
 
 @ObjectType()
 @Schema()
@@ -43,9 +44,9 @@ export class User {
   // @Field(() => [Bookshelf], { nullable: 'items' })
   // idBookshelf: MongooseSchema.Types.ObjectId[];
 
-  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Interests' })
-  // @Field(() => Interests)
-  // idInterests: Interests;
+  @Prop()
+  @Field(() => [Interest], { nullable: true })
+  interests: Interest[];
 
   // @Prop()
   // @Field(() => String)

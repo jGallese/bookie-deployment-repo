@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
+import { Interest } from './entities/interest.entity';
 
 @Injectable()
 export class UsersService {
@@ -102,5 +103,29 @@ export class UsersService {
     const user = await this.getMyUser(context);
     const updatedUser = await this.userModel.findByIdAndUpdate(user._id, updateUserInput, { new: true, runValidators: true});
     return updatedUser;
+  }
+
+  async addInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+
+    console.log(!user.interests)
+
+    //Si el usuario aún no tiene intereses, se crea un array vacío
+    if (!user.interests) {
+      user.interests = [interest];
+    }
+    else {
+      user.interests.push(interest);
+    }
+
+    await user.save();
+    return interest;
+  }
+
+  async removeInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    user.interests = user.interests.filter((i) => i.keyword !== interest.keyword && i.category !== interest.category);
+    await user.save();
+    return interest;
   }
 }

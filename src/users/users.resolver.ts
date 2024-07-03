@@ -8,6 +8,8 @@ import { UserToken } from './dto/token.entity';
 import { LoginDto } from './dto/login.dto';
 import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Interest } from './entities/interest.entity';
+import { InterestDto } from './dto/interest.dto';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -57,5 +59,23 @@ export class UsersResolver {
     @Context() context,
   ) {
     return this.usersService.updateMyUser(updateUserInput, context);
+  }
+
+  @Mutation(() => Interest, { name: 'addInterest' })
+  @UseGuards(GqlAuthGuard)
+  addInterest(
+    @Args('interest') interest: InterestDto,
+    @Context() context,
+  ) {
+    return this.usersService.addInterest(interest, context);
+  }
+
+  @Mutation(() => Interest, { name: 'removeInterest' })
+  @UseGuards(GqlAuthGuard)
+  removeInterest(
+    @Args('interest') interest: InterestDto,
+    @Context() context,
+  ) {
+    return this.usersService.removeInterest(interest, context);
   }
 }
