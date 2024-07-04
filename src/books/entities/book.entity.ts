@@ -18,7 +18,7 @@ class BookImage {
 @Schema()
 export class Book {
   @Field(() => String)
-  _id: MongooseSchema.Types.ObjectId;
+  _id: string; //
 
   @Prop()
   @Field()
