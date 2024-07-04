@@ -128,4 +128,9 @@ export class UsersService {
     await user.save();
     return interest;
   }
+
+  async findAllInterests(context) {
+    const user = await this.getMyUser(context);
+    return user.interests;
+  }
 }

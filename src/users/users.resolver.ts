@@ -78,4 +78,10 @@ export class UsersResolver {
   ) {
     return this.usersService.removeInterest(interest, context);
   }
+
+  @Query(() => [Interest], { name: 'userInterests' })
+  @UseGuards(GqlAuthGuard)
+  findAllInterests(@Context() context) {
+    return this.usersService.findAllInterests(context);
+  }
 }
