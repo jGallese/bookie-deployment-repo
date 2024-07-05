@@ -32,7 +32,7 @@ export class User {
   @Field(() => GraphQLISODateTime, { nullable: true })
   birthDate: Date;
 
-  @Prop({unique: [true, 'Duplicate Email entered']})
+  @Prop({ unique: [true, 'Duplicate Email entered'] })
   @Field(() => String)
   email: string;
 

@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
@@ -13,15 +12,11 @@ import { Interest } from './entities/interest.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name)
-  private userModel: Model<UserDocument>,
-  private jwtService: JwtService,
+  constructor(
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
   ) {}
-
-  create(createUserInput: CreateUserInput) {
-    const createdUser = new this.userModel(createUserInput);
-    return createdUser.save();
-  }
 
   findAll() {
     return this.userModel.find();
@@ -31,33 +26,44 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
 
-  async signup(signUpDto: SignUpDto) : Promise<{user: User, token: string }>{
-    const {username, email, pass } = signUpDto;
+  async signup(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
+    const { username, email, pass } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(pass, 10);
-    const user = await this.userModel.create({
-      username,
-      email,
-      pass: hashedPassword,
-    });
+    try {
+      const user = await this.userModel.create({
+        username,
+        email,
+        pass: hashedPassword,
+      });
 
-    const token = this.jwtService.sign( { username: user.username, sub: user._id});
+      const token = this.jwtService.sign({
+        username: user.username,
+        sub: user._id,
+      });
 
-    return { user, token };
+      return { user, token };
+    } catch (error) {
+      if (error.code === 11000) {
+        if (error.keyPattern.email) {
+          throw new UnauthorizedException('El correo ya está en uso');
+        }
+        if (error.keyPattern.username) {
+          throw new UnauthorizedException('El usuario ya existe');
+        }
+      }
+      throw new UnauthorizedException('Error creando usuario');
+    }
   }
 
-  async login(LoginDto: LoginDto) : Promise<UserToken>{
+  async login(LoginDto: LoginDto): Promise<UserToken> {
     const { email, pass } = LoginDto;
 
-    const user = await this.userModel.findOne({email});
+    const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -67,10 +73,12 @@ export class UsersService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const token = this.jwtService.sign( { username: user.username, sub: user._id });
+    const token = this.jwtService.sign({
+      username: user.username,
+      sub: user._id,
+    });
 
-    return { user, token};
-
+    return { user, token };
   }
 
   async getMyUser(context) {
@@ -81,7 +89,6 @@ export class UsersService {
 
     const token = authorization.replace('Bearer ', '');
     try {
-
       // Decodificar el token
       const decoded: any = this.jwtService.verify(token);
       const idUser = decoded.sub;
@@ -101,7 +108,11 @@ export class UsersService {
 
   async updateMyUser(updateUserInput: UpdateUserInput, context) {
     const user = await this.getMyUser(context);
-    const updatedUser = await this.userModel.findByIdAndUpdate(user._id, updateUserInput, { new: true, runValidators: true});
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      user._id,
+      updateUserInput,
+      { new: true, runValidators: true },
+    );
     return updatedUser;
   }
 
