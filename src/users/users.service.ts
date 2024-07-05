@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
-import { Interest } from './entities/interest.entity';
+import { Category, Interest } from './entities/interest.entity';
 
 @Injectable()
 export class UsersService {
@@ -143,5 +143,10 @@ export class UsersService {
   async findAllInterests(context) {
     const user = await this.getMyUser(context);
     return user.interests;
+  }
+
+  async findCategoryInterests(context, category: Category) {
+    const user = await this.getMyUser(context);
+    return user.interests.filter((i) => i.category === category);
   }
 }

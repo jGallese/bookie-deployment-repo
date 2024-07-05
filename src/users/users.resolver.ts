@@ -7,7 +7,7 @@ import { UserToken } from './dto/token.entity';
 import { LoginDto } from './dto/login.dto';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Interest } from './entities/interest.entity';
+import { Category, Interest } from './entities/interest.entity';
 import { InterestDto } from './dto/interest.dto';
 
 @Resolver(() => User)
@@ -77,5 +77,13 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   findAllInterests(@Context() context) {
     return this.usersService.findAllInterests(context);
+  }
+
+  @Query(() => [Interest], { name: 'userCategoryInterests' })
+  @UseGuards(GqlAuthGuard)
+  findCategoryInterests(
+    @Args('category') category: Category,
+    @Context() context) {
+    return this.usersService.findCategoryInterests(context, category);
   }
 }
