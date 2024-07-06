@@ -25,7 +25,7 @@ export class BooksService {
     });
   }
 
-  async searchBooksByName(query: string) {
+  async searchBooksByTitle(query: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
@@ -36,10 +36,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByGender(gender: string) {
+  async searchBooksByGenre(query: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+subject:${gender}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}`,
       );
 
       return await this.mapDataItemsToReturn(response);
@@ -48,10 +48,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(author: string) {
+  async searchBooksByAuthor(query: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${author}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}`,
       );
 
       return await this.mapDataItemsToReturn(response);

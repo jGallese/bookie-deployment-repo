@@ -13,12 +13,12 @@ export class BooksResolver {
 
   @Query(() => [Book])
   async searchBooksByTitle(@Args('query') query: string) {
-    return this.booksService.searchBooksByName(query);
+    return this.booksService.searchBooksByTitle(query);
   }
 
   @Query(() => [Book])
-  async searchBooksByGender(@Args('query') query: string) {
-    return this.booksService.searchBooksByGender(query);
+  async searchBooksByGenre(@Args('query') query: string) {
+    return this.booksService.searchBooksByGenre(query);
   }
 
   @Query(() => [Book])
