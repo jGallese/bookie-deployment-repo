@@ -37,17 +37,8 @@ export class Book {
   image?: BookImage;
 
   @Prop()
-  @Field(() => String, { nullable: true })
+  @Field(() => [String], { nullable: true })
   category?: string;
-
-  constructor(_id, title, authors, description, images, categories) {
-    this._id = _id;
-    this.title = title;
-    this.authors = authors;
-    this.description = description;
-    this.image = images;
-    this.category = categories;
-  }
 }
 
 export type UserDocument = Book & Document;

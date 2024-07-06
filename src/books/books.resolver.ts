@@ -12,7 +12,7 @@ export class BooksResolver {
   }
 
   @Query(() => [Book])
-  async searchBooks(@Args('query') query: string) {
+  async searchBooksByTitle(@Args('query') query: string) {
     return this.booksService.searchBooksByName(query);
   }
 

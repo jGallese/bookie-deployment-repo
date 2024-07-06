@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { envs } from 'config/envs.config';
-import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BooksService {
@@ -12,17 +11,18 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
-    return data.items.map(
-      (item) =>
-        new Book(
-          item.id,
-          item.volumeInfo.title,
-          item.volumeInfo.authors,
-          item.volumeInfo.description,
-          item.volumeInfo.imageLinks,
-          item.volumeInfo.categories[0],
-        ),
-    );
+    console.log(data);
+    return data.items.map((item) => {
+      const book = {
+        _id: item.id,
+        title: item.volumeInfo.title,
+        authors: item.volumeInfo.authors,
+        description: item.volumeInfo.description,
+        imageLinks: item.volumeInfo.imageLinks,
+        category: item.volumeInfo.categories,
+      };
+      return book;
+    });
   }
 
   async searchBooksByName(query: string) {
@@ -67,14 +67,15 @@ export class BooksService {
       );
       const data = await response.json();
 
-      return new Book(
-        data.id,
-        data.volumeInfo.title,
-        data.volumeInfo.authors,
-        data.volumeInfo.description,
-        data.volumeInfo.imageLinks,
-        data.volumeInfo.categories[0],
-      );
+      const book = {
+        _id: data.id,
+        title: data.volumeInfo.title,
+        authors: data.volumeInfo.authors,
+        description: data.volumeInfo.description,
+        imageLinks: data.volumeInfo.imageLinks,
+        category: data.volumeInfo.categories,
+      };
+      return book;
     } catch (error) {
       throw new Error(error);
     }
