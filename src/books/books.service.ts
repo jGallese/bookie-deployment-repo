@@ -45,6 +45,7 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
       );
+      console.log(response);
       return await this.mapDataItemsToReturn(response);
     } catch (error) {
       throw new Error(error);

@@ -39,6 +39,7 @@ export class UsersService {
         username,
         email,
         pass: hashedPassword,
+        interests: [],
       });
 
       const token = this.jwtService.sign({
@@ -142,11 +143,21 @@ export class UsersService {
 
   async findAllInterests(context) {
     const user = await this.getMyUser(context);
-    return user.interests;
+    if (!user.interests)
+    {
+      user.interests = [];
+      await user.save();
+    }
+    else {return user.interests;}
   }
 
   async findCategoryInterests(context, category: Category) {
     const user = await this.getMyUser(context);
+    if (!user.interests)
+      {
+        user.interests = [];
+        await user.save();
+      }
     return user.interests.filter((i) => i.category === category);
   }
 }
