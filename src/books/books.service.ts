@@ -13,6 +13,16 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
+    console.log(data);
+    if (!data.items) {
+      return {
+      _id: data.id,
+      title: data.volumeInfo.title,
+      authors: data.volumeInfo.authors,
+      description: data.volumeInfo.description,
+      image: data.volumeInfo.imageLinks,
+      };
+    }
     return data.items.map((item) => ({
       _id: item.id,
       title: item.volumeInfo.title,
