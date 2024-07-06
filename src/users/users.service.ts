@@ -136,7 +136,7 @@ export class UsersService {
 
   async removeInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
-    user.interests = user.interests.filter((i) => i.keyword !== interest.keyword && i.category !== interest.category);
+    user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
     await user.save();
     return interest;
   }

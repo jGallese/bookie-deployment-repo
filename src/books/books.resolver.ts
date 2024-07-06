@@ -19,8 +19,8 @@ export class BooksResolver {
   }
 
   @Query(() => Book, { name: 'book' })
-  findOne(@Args('id', { type: () => String }) id: string) {
-    return this.booksService.findOne(id);
+  async findOne(@Args('id', { type: () => String }) id: string) {
+    return await this.booksService.findOne(id);
   }
 
   @Query(() => [Book])

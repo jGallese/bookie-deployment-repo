@@ -13,6 +13,16 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
+    console.log(data);
+    if (!data.items) {
+      return {
+      _id: data.id,
+      title: data.volumeInfo.title,
+      authors: data.volumeInfo.authors,
+      description: data.volumeInfo.description,
+      image: data.volumeInfo.imageLinks,
+      };
+    }
     return data.items.map((item) => ({
       _id: item.id,
       title: item.volumeInfo.title,
@@ -35,6 +45,7 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
       );
+      console.log(response);
       return await this.mapDataItemsToReturn(response);
     } catch (error) {
       throw new Error(error);
