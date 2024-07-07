@@ -2,7 +2,6 @@ import { Date, Schema as MongooseSchema } from 'mongoose';
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
-import { isNullableType } from 'graphql';
 
 @ObjectType()
 @Schema()
@@ -10,7 +9,7 @@ export class User {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({unique: [true, 'Duplicate Username entered']})
+  @Prop({ unique: [true, 'Duplicate Username entered'] })
   @Field(() => String)
   username: string;
 
@@ -38,10 +37,6 @@ export class User {
   // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Address' })
   // @Field(() => Address)
   // address: Address;
-
-  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Bookshelf' })
-  // @Field(() => [Bookshelf], { nullable: 'items' })
-  // idBookshelf: MongooseSchema.Types.ObjectId[];
 
   // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Interests' })
   // @Field(() => Interests)
