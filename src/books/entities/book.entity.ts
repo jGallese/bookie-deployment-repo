@@ -18,7 +18,7 @@ class BookImage {
 @Schema()
 export class Book {
   @Field(() => String)
-  _id: MongooseSchema.Types.ObjectId;
+  _id: string; //
 
   @Prop()
   @Field()
@@ -39,6 +39,14 @@ export class Book {
   @Prop()
   @Field(() => BookImage, { nullable: true })
   image?: BookImage;
+
+  @Prop()
+  @Field(() => [String], { nullable: true })
+  category?: string;
+
+  @Prop()
+  @Field(() => String)
+  ISBN?: string;
 }
 
 export type UserDocument = Book & Document;
