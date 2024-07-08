@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBookInput } from './dto/create-book.input';
-import { UpdateBookInput } from './dto/update-book.input';
 import { envs } from 'config/envs.config';
 
 @Injectable()
@@ -16,11 +14,14 @@ export class BooksService {
     console.log(data);
     if (!data.items) {
       return {
-      _id: data.id,
-      title: data.volumeInfo.title,
-      authors: data.volumeInfo.authors,
-      description: data.volumeInfo.description,
-      image: data.volumeInfo.imageLinks,
+        _id: data.id,
+        title: data.volumeInfo.title,
+        authors: data.volumeInfo.authors,
+        description: data.volumeInfo.description,
+        image: data.volumeInfo.imageLinks,
+        categories: data.volumeInfo.categories,
+        ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
+
       };
     }
     return data.items.map((item) => ({
@@ -30,18 +31,11 @@ export class BooksService {
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
       categories: item.volumeInfo.categories,
+      ISBN: item.volumeInfo.industryIdentifiers[0].identifier,
     }));
   }
 
-  create(createBookInput: CreateBookInput) {
-    return 'This action adds a new book';
-  }
-
-  findAll() {
-    return `This action returns all books`;
-  }
-
-  async searchBooks(query: string) {
+  async searchBooksByTitle(query: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
@@ -53,10 +47,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByGender(gender: string) {
+  async searchBooksByGenre(query: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+subject:${gender}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}`,
       );
 
       return await this.mapDataItemsToReturn(response);
@@ -65,10 +59,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(author: string) {
+  async searchBooksByAuthor(query: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${author}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}`,
       );
 
       return await this.mapDataItemsToReturn(response);
@@ -82,17 +76,11 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes/${id}?key=${this.googleBooksApiKey}`,
       );
-      return await this.mapDataItemsToReturn(response);
+
+      const book = this.mapDataItemsToReturn(response);
+      return book;
     } catch (error) {
       throw new Error(error);
     }
-  }
-
-  update(id: number, updateBookInput: UpdateBookInput) {
-    return `This action updates a #${id} book`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} book`;
   }
 }
