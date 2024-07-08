@@ -120,13 +120,25 @@ export class UsersService {
   async addInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
 
-    console.log(!user.interests)
-
     //Si el usuario aún no tiene intereses, se crea un array vacío
     if (!user.interests) {
       user.interests = [interest];
-    }
-    else {
+    } else {
+
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          console.log("Hola fede");
+          console.log(user.interests[i].points);
+          console.log(interest.points);
+          interest.points += user.interests[i].points;
+          user.interests[i] = interest;
+          await user.save();
+          return interest;
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
       user.interests.push(interest);
     }
 

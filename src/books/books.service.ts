@@ -29,6 +29,7 @@ export class BooksService {
       authors: item.volumeInfo.authors,
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
+      categories: item.volumeInfo.categories,
     }));
   }
 
