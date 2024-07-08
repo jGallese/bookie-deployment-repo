@@ -6,7 +6,7 @@ import { UsersModule } from './users/users.module';
 import { envs } from '../config/envs.config';
 import { BooksModule } from './books/books.module';
 import { JwtStrategy } from './auth/jwt.strategy';
-import { BookshelfsModule } from './bookshelfs/bookshelfs.module';
+import { BookshelvesModule } from './bookshelves/bookshelves.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { BookshelfsModule } from './bookshelfs/bookshelfs.module';
     }),
     UsersModule,
     BooksModule,
-    BookshelfsModule,
+    BookshelvesModule,
   ],
   providers: [JwtStrategy],
 })

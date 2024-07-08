@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { BookshelfsService } from './bookshelfs.service';
-import { BookshelfsResolver } from './bookshelfs.resolver';
+import { BookshelvesService } from './bookshelves.service';
+import { BookshelvesResolver } from './bookshelves.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Bookshelf, BookshelfSchema } from './entities/bookshelf.entity';
 import { Book, BookSchema } from 'src/books/entities/book.entity';
@@ -12,6 +12,6 @@ import { Book, BookSchema } from 'src/books/entities/book.entity';
     ]),
     MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]),
   ],
-  providers: [BookshelfsService, BookshelfsResolver],
+  providers: [BookshelvesService, BookshelvesResolver],
 })
-export class BookshelfsModule {}
+export class BookshelvesModule {}

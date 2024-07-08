@@ -6,7 +6,7 @@ import { CreateBookshelfInput } from './dto/create-bookshelf.input';
 import { UpdateBookshelfInput } from './dto/update.bookshelf.input';
 
 @Injectable()
-export class BookshelfsService {
+export class BookshelvesService {
   constructor(
     @InjectModel(Bookshelf.name) private bookshelfModel: Model<Bookshelf>,
   ) {}

@@ -1,13 +1,13 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Book } from 'src/books/entities/book.entity';
+import { Schema as MongooseSchema } from 'mongoose';
 
 @ObjectType()
 @Schema()
-export class Bookshelf extends Document {
-  @Field(() => Int)
-  @Prop({ required: true, unique: true })
-  _id: number;
+export class Bookshelf {
+  @Field(() => String)
+  _id: MongooseSchema.Types.ObjectId;
 
   @Field(() => String)
   @Prop({ required: true })
@@ -25,5 +25,7 @@ export class Bookshelf extends Document {
   @Prop({ type: [{ type: String, ref: 'Book' }], default: [] })
   books?: Book[];
 }
+
+export type BookshelfDocument = Bookshelf & Document;
 
 export const BookshelfSchema = SchemaFactory.createForClass(Bookshelf);

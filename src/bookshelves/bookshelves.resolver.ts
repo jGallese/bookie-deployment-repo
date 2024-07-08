@@ -1,12 +1,12 @@
 import { Args, Resolver, Query, Mutation } from '@nestjs/graphql';
 import { Bookshelf } from './entities/bookshelf.entity';
-import { BookshelfsService } from './bookshelfs.service';
+import { BookshelvesService } from './bookshelves.service';
 import { CreateBookshelfInput } from './dto/create-bookshelf.input';
 import { UpdateBookshelfInput } from './dto/update.bookshelf.input';
 
 @Resolver(() => Bookshelf)
-export class BookshelfsResolver {
-  constructor(private readonly bookshelfService: BookshelfsService) {}
+export class BookshelvesResolver {
+  constructor(private readonly bookshelfService: BookshelvesService) {}
 
   @Query(() => [Bookshelf])
   async findAll() {
