@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
+import { Category, Interest } from './entities/interest.entity';
 
 @Injectable()
 export class UsersService {
@@ -38,6 +39,7 @@ export class UsersService {
         username,
         email,
         pass: hashedPassword,
+        interests: [],
       });
 
       const token = this.jwtService.sign({
@@ -113,5 +115,61 @@ export class UsersService {
       { new: true, runValidators: true },
     );
     return updatedUser;
+  }
+
+  async addInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+
+    //Si el usuario aún no tiene intereses, se crea un array vacío
+    if (!user.interests) {
+      user.interests = [interest];
+    } else {
+
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          console.log("Hola fede");
+          console.log(user.interests[i].points);
+          console.log(interest.points);
+          interest.points += user.interests[i].points;
+          user.interests[i] = interest;
+          await user.save();
+          return interest;
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
+      user.interests.push(interest);
+    }
+
+    await user.save();
+    return interest;
+  }
+
+  async removeInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
+    await user.save();
+    return interest;
+  }
+
+  async findAllInterests(context) {
+    const user = await this.getMyUser(context);
+    if (!user.interests)
+    {
+      user.interests = [];
+      await user.save();
+    }
+    else {return user.interests;}
+  }
+
+  async findCategoryInterests(context, category: Category) {
+    const user = await this.getMyUser(context);
+    if (!user.interests)
+      {
+        user.interests = [];
+        await user.save();
+      }
+    return user.interests.filter((i) => i.category === category);
   }
 }
