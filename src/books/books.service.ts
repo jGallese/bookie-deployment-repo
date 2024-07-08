@@ -17,7 +17,6 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
-    console.log(data);
     if (!data.items) {
       return {
         _id: data.id,
@@ -26,7 +25,7 @@ export class BooksService {
         description: data.volumeInfo.description,
         image: data.volumeInfo.imageLinks,
         categories: data.volumeInfo.categories,
-        ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
+        ISBN: data.volumeInfo.industryIdentifiers? data.volumeInfo.industryIdentifiers[0].identifier : null,
 
       };
     }
@@ -37,13 +36,12 @@ export class BooksService {
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
       categories: item.volumeInfo.categories,
-      ISBN: item.volumeInfo.industryIdentifiers[0].identifier,
+      ISBN: item.volumeInfo.industryIdentifiers? item.volumeInfo.industryIdentifiers[0].identifier : null,
     }));
   }
 
   async mapDataAuthorToReturn(response: Response) {
     const data =  await response.json();
-    console.log(data.docs)
     return data.docs.map((item) => ({
       _id: item.key,
       name: item.name,
@@ -53,7 +51,6 @@ export class BooksService {
 
   async mapDataGenreToReturn(response: Response) {
     const data =  await response.json();
-    console.log(data.docs)
     return data.docs.map((item) => ({
       _id: item.key,
       name: item.name,

@@ -45,7 +45,7 @@ export class Book {
   category?: string;
 
   @Prop()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   ISBN?: string;
 }
 
