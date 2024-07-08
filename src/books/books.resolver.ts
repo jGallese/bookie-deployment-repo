@@ -6,9 +6,11 @@ import { Book } from './entities/book.entity';
 export class BooksResolver {
   constructor(private readonly booksService: BooksService) {}
 
+
   @Query(() => Book)
   searchBookById(@Args('id', { type: () => String }) id: string) {
     return this.booksService.findOne(id);
+
   }
 
   @Query(() => [Book])

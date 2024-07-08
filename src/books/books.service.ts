@@ -13,13 +13,6 @@ export class BooksService {
     const data = await response.json();
     console.log(data);
     if (!data.items) {
-      // const isbnList = data.volumeInfo.industryIdentifiers;
-      // let isbnForBook;
-      // isbnList.array.forEach((x) => {
-      //   if (x.type === 'ISBN_13') {
-      //     isbnForBook = x.identifier;
-      //   }
-      // });
       return {
         _id: data.id,
         title: data.volumeInfo.title,
@@ -28,6 +21,7 @@ export class BooksService {
         image: data.volumeInfo.imageLinks,
         categories: data.volumeInfo.categories,
         ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
+
       };
     }
     return data.items.map((item) => ({
@@ -46,6 +40,7 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
       );
+      console.log(response);
       return await this.mapDataItemsToReturn(response);
     } catch (error) {
       throw new Error(error);

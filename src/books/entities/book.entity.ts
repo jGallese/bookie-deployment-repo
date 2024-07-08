@@ -29,6 +29,10 @@ export class Book {
   authors?: string[];
 
   @Prop()
+  @Field(() => [String], { nullable: true })
+  categories?: string[];
+
+  @Prop()
   @Field({ nullable: true })
   description?: string;
 

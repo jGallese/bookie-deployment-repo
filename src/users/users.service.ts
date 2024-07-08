@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
@@ -9,18 +8,15 @@ import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
+import { Category, Interest } from './entities/interest.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name)
-  private userModel: Model<UserDocument>,
-  private jwtService: JwtService,
+  constructor(
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+    private jwtService: JwtService,
   ) {}
-
-  create(createUserInput: CreateUserInput) {
-    const createdUser = new this.userModel(createUserInput);
-    return createdUser.save();
-  }
 
   findAll() {
     return this.userModel.find();
@@ -30,33 +26,45 @@ export class UsersService {
     return this.userModel.findById(id);
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
 
-  async signup(signUpDto: SignUpDto) : Promise<{user: User, token: string }>{
-    const {username, email, pass } = signUpDto;
+  async signup(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
+    const { username, email, pass } = signUpDto;
 
     const hashedPassword = await bcrypt.hash(pass, 10);
-    const user = await this.userModel.create({
-      username,
-      email,
-      pass: hashedPassword,
-    });
+    try {
+      const user = await this.userModel.create({
+        username,
+        email,
+        pass: hashedPassword,
+        interests: [],
+      });
 
-    const token = this.jwtService.sign( { username: user.username, sub: user._id});
+      const token = this.jwtService.sign({
+        username: user.username,
+        sub: user._id,
+      });
 
-    return { user, token };
+      return { user, token };
+    } catch (error) {
+      if (error.code === 11000) {
+        if (error.keyPattern.email) {
+          throw new UnauthorizedException('El correo ya está en uso');
+        }
+        if (error.keyPattern.username) {
+          throw new UnauthorizedException('El usuario ya existe');
+        }
+      }
+      throw new UnauthorizedException('Error creando usuario');
+    }
   }
 
-  async login(LoginDto: LoginDto) : Promise<UserToken>{
+  async login(LoginDto: LoginDto): Promise<UserToken> {
     const { email, pass } = LoginDto;
 
-    const user = await this.userModel.findOne({email});
+    const user = await this.userModel.findOne({ email });
     if (!user) {
       throw new UnauthorizedException('Invalid email or password');
     }
@@ -66,10 +74,12 @@ export class UsersService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const token = this.jwtService.sign( { username: user.username, sub: user._id });
+    const token = this.jwtService.sign({
+      username: user.username,
+      sub: user._id,
+    });
 
-    return { user, token};
-
+    return { user, token };
   }
 
   async getMyUser(context) {
@@ -80,7 +90,6 @@ export class UsersService {
 
     const token = authorization.replace('Bearer ', '');
     try {
-
       // Decodificar el token
       const decoded: any = this.jwtService.verify(token);
       const idUser = decoded.sub;
@@ -100,7 +109,67 @@ export class UsersService {
 
   async updateMyUser(updateUserInput: UpdateUserInput, context) {
     const user = await this.getMyUser(context);
-    const updatedUser = await this.userModel.findByIdAndUpdate(user._id, updateUserInput, { new: true, runValidators: true});
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      user._id,
+      updateUserInput,
+      { new: true, runValidators: true },
+    );
     return updatedUser;
+  }
+
+  async addInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+
+    //Si el usuario aún no tiene intereses, se crea un array vacío
+    if (!user.interests) {
+      user.interests = [interest];
+    } else {
+
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          console.log("Hola fede");
+          console.log(user.interests[i].points);
+          console.log(interest.points);
+          interest.points += user.interests[i].points;
+          user.interests[i] = interest;
+          await user.save();
+          return interest;
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
+      user.interests.push(interest);
+    }
+
+    await user.save();
+    return interest;
+  }
+
+  async removeInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
+    await user.save();
+    return interest;
+  }
+
+  async findAllInterests(context) {
+    const user = await this.getMyUser(context);
+    if (!user.interests)
+    {
+      user.interests = [];
+      await user.save();
+    }
+    else {return user.interests;}
+  }
+
+  async findCategoryInterests(context, category: Category) {
+    const user = await this.getMyUser(context);
+    if (!user.interests)
+      {
+        user.interests = [];
+        await user.save();
+      }
+    return user.interests.filter((i) => i.category === category);
   }
 }
