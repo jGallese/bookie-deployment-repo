@@ -1,8 +1,6 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { BooksService } from './books.service';
 import { Book } from './entities/book.entity';
-import { CreateBookInput } from './dto/create-book.input';
-import { UpdateBookInput } from './dto/update-book.input';
 import { Author } from './entities/author.entity';
 import { Genre } from './entities/genre.entity';
 
@@ -30,16 +28,6 @@ export class BooksResolver {
   @Query(() => [Book])
   async searchBooksByAuthor(@Args('query') query: string) {
     return this.booksService.searchBooksByAuthor(query);
-  }
-
-  @Mutation(() => Book)
-  updateBook(@Args('updateBookInput') updateBookInput: UpdateBookInput) {
-    return this.booksService.update(updateBookInput.id, updateBookInput);
-  }
-
-  @Mutation(() => Book)
-  removeBook(@Args('id', { type: () => Int }) id: number) {
-    return this.booksService.remove(id);
   }
 
   @Query(()=> [Author])

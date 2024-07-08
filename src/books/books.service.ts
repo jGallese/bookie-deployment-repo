@@ -60,25 +60,6 @@ export class BooksService {
     }));
   }
 
-  async mapDataAuthorToReturn(response: Response) {
-    const data =  await response.json();
-    console.log(data.docs)
-    return data.docs.map((item) => ({
-      _id: item.key,
-      name: item.name,
-      top_work: item.top_work,
-    }));
-  }
-
-  async mapDataGenreToReturn(response: Response) {
-    const data =  await response.json();
-    console.log(data.docs)
-    return data.docs.map((item) => ({
-      _id: item.key,
-      name: item.name,
-    }));
-  }
-
   async searchBooksByTitle(query: string) {
     try {
       const response = await fetch(
@@ -126,14 +107,6 @@ export class BooksService {
     } catch (error) {
       throw new Error(error);
     }
-  }
-
-  update(id: number, updateBookInput: UpdateBookInput) {
-    return `This action updates a #${id} book`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} book`;
   }
 
   async searchAuthors(query: string) {	
