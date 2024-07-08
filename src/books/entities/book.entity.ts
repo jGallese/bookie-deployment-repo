@@ -39,6 +39,10 @@ export class Book {
   @Prop()
   @Field(() => [String], { nullable: true })
   category?: string;
+
+  @Prop()
+  @Field(() => String)
+  ISBN?: string;
 }
 
 export type UserDocument = Book & Document;

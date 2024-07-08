@@ -12,17 +12,33 @@ export class BooksService {
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
     console.log(data);
-    return data.items.map((item) => {
-      const book = {
-        _id: item.id,
-        title: item.volumeInfo.title,
-        authors: item.volumeInfo.authors,
-        description: item.volumeInfo.description,
-        imageLinks: item.volumeInfo.imageLinks,
-        category: item.volumeInfo.categories,
+    if (!data.items) {
+      // const isbnList = data.volumeInfo.industryIdentifiers;
+      // let isbnForBook;
+      // isbnList.array.forEach((x) => {
+      //   if (x.type === 'ISBN_13') {
+      //     isbnForBook = x.identifier;
+      //   }
+      // });
+      return {
+        _id: data.id,
+        title: data.volumeInfo.title,
+        authors: data.volumeInfo.authors,
+        description: data.volumeInfo.description,
+        image: data.volumeInfo.imageLinks,
+        categories: data.volumeInfo.categories,
+        ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
       };
-      return book;
-    });
+    }
+    return data.items.map((item) => ({
+      _id: item.id,
+      title: item.volumeInfo.title,
+      authors: item.volumeInfo.authors,
+      description: item.volumeInfo.description,
+      image: item.volumeInfo.imageLinks,
+      categories: item.volumeInfo.categories,
+      ISBN: item.volumeInfo.industryIdentifiers[0].identifier,
+    }));
   }
 
   async searchBooksByTitle(query: string) {
@@ -65,16 +81,8 @@ export class BooksService {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes/${id}?key=${this.googleBooksApiKey}`,
       );
-      const data = await response.json();
 
-      const book = {
-        _id: data.id,
-        title: data.volumeInfo.title,
-        authors: data.volumeInfo.authors,
-        description: data.volumeInfo.description,
-        imageLinks: data.volumeInfo.imageLinks,
-        category: data.volumeInfo.categories,
-      };
+      const book = this.mapDataItemsToReturn(response);
       return book;
     } catch (error) {
       throw new Error(error);
