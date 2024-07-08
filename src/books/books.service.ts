@@ -2,12 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateBookInput } from './dto/create-book.input';
 import { UpdateBookInput } from './dto/update-book.input';
 import { envs } from 'config/envs.config';
+import { Genre, GenreDocument } from './entities/genre.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class BooksService {
   private readonly googleBooksApiKey: string;
 
-  constructor() {
+  constructor(
+    @InjectModel(Genre.name)
+    private genreModel: Model<GenreDocument>,
+  ) {
     this.googleBooksApiKey = envs.GOOGLE_BOOKS_APIKEY;
   }
 
@@ -21,6 +27,7 @@ export class BooksService {
       authors: data.volumeInfo.authors,
       description: data.volumeInfo.description,
       image: data.volumeInfo.imageLinks,
+      categories: data.volumeInfo.categories,
       };
     }
     return data.items.map((item) => ({
@@ -30,6 +37,25 @@ export class BooksService {
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
       categories: item.volumeInfo.categories,
+    }));
+  }
+
+  async mapDataAuthorToReturn(response: Response) {
+    const data =  await response.json();
+    console.log(data.docs)
+    return data.docs.map((item) => ({
+      _id: item.key,
+      name: item.name,
+      top_work: item.top_work,
+    }));
+  }
+
+  async mapDataGenreToReturn(response: Response) {
+    const data =  await response.json();
+    console.log(data.docs)
+    return data.docs.map((item) => ({
+      _id: item.key,
+      name: item.name,
     }));
   }
 
@@ -94,5 +120,26 @@ export class BooksService {
 
   remove(id: number) {
     return `This action removes a #${id} book`;
+  }
+
+  async searchAuthors(query: string) {	
+    try {
+      const response = await fetch(`https://openlibrary.org/search/authors.json?q=${query}&lang=es`);
+      return await this.mapDataAuthorToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async searchGenres(query: string) {
+    /*try {
+      const response = await fetch(`https://openlibrary.org/search/subjects.json?q=${query}&lang=es`);
+      return await this.mapDataGenreToReturn(response);
+    } catch (error) {
+      throw new Error(error);
+    }*/
+
+    return this.genreModel.find({nameSpanish: { $regex: query, $options: 'i' }});
+
   }
 }
