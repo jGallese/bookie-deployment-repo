@@ -11,7 +11,6 @@ export class BooksService {
 
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
-    console.log(data);
     if (!data.items) {
       return {
         _id: data.id,
@@ -21,7 +20,6 @@ export class BooksService {
         image: data.volumeInfo.imageLinks,
         categories: data.volumeInfo.categories,
         ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
-
       };
     }
     return data.items.map((item) => ({
@@ -35,22 +33,21 @@ export class BooksService {
     }));
   }
 
-  async searchBooksByTitle(query: string) {
+  async searchBooksByTitle(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
-      console.log(response);
       return await this.mapDataItemsToReturn(response);
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async searchBooksByGenre(query: string) {
+  async searchBooksByGenre(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
 
       return await this.mapDataItemsToReturn(response);
@@ -59,10 +56,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(query: string) {
+  async searchBooksByAuthor(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
 
       return await this.mapDataItemsToReturn(response);
