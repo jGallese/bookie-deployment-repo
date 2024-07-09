@@ -18,7 +18,7 @@ export class BooksService {
         authors: data.volumeInfo.authors,
         description: data.volumeInfo.description,
         image: data.volumeInfo.imageLinks,
-        categories: data.volumeInfo.categories,
+        category: data.volumeInfo.categories[0],
         ISBN: data.volumeInfo.industryIdentifiers[0].identifier,
       };
     }
@@ -28,12 +28,12 @@ export class BooksService {
       authors: item.volumeInfo.authors,
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
-      categories: item.volumeInfo.categories,
+      category: item.volumeInfo.categories,
       ISBN: item.volumeInfo.industryIdentifiers[0].identifier,
     }));
   }
 
-  async searchBooksByTitle(query: string, startIndex: string) {
+  async searchBooksByTitle(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -44,7 +44,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByGenre(query: string, startIndex: string) {
+  async searchBooksByGenre(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -56,7 +56,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(query: string, startIndex: string) {
+  async searchBooksByAuthor(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,

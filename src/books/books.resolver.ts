@@ -14,7 +14,7 @@ export class BooksResolver {
   @Query(() => [Book])
   async searchBooksByTitle(
     @Args('query') query: string,
-    @Args('startIndex ', { defaultValue: '0' }) startIndex?: string,
+    @Args('startIndex', { defaultValue: '0' }) startIndex?: number,
   ) {
     return this.booksService.searchBooksByTitle(query, startIndex);
   }
@@ -22,7 +22,7 @@ export class BooksResolver {
   @Query(() => [Book])
   async searchBooksByGenre(
     @Args('query') query: string,
-    @Args('startIndex ', { defaultValue: '0' }) startIndex?: string,
+    @Args('startIndex', { defaultValue: '0' }) startIndex?: number,
   ) {
     return this.booksService.searchBooksByGenre(query, startIndex);
   }
@@ -30,7 +30,7 @@ export class BooksResolver {
   @Query(() => [Book])
   async searchBooksByAuthor(
     @Args('query') query: string,
-    @Args('startIndex ', { defaultValue: '0' }) startIndex?: string,
+    @Args('startIndex', { defaultValue: '0' }) startIndex?: number,
   ) {
     return this.booksService.searchBooksByAuthor(query, startIndex);
   }
