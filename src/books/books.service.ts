@@ -57,22 +57,21 @@ export class BooksService {
     }));
   }
 
-  async searchBooksByTitle(query: string) {
+  async searchBooksByTitle(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
-      console.log(response);
       return await this.mapDataItemsToReturn(response);
     } catch (error) {
       throw new Error(error);
     }
   }
 
-  async searchBooksByGenre(query: string) {
+  async searchBooksByGenre(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
 
       return await this.mapDataItemsToReturn(response);
@@ -81,10 +80,10 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(query: string) {
+  async searchBooksByAuthor(query: string, startIndex: string) {
     try {
       const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}`,
+        `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
       );
 
       return await this.mapDataItemsToReturn(response);
