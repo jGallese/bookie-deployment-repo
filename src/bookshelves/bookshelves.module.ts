@@ -4,6 +4,7 @@ import { BookshelvesResolver } from './bookshelves.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Bookshelf, BookshelfSchema } from './entities/bookshelf.entity';
 import { Book, BookSchema } from 'src/books/entities/book.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { Book, BookSchema } from 'src/books/entities/book.entity';
       { name: Bookshelf.name, schema: BookshelfSchema },
     ]),
     MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]),
+    UsersModule,
   ],
   providers: [BookshelvesService, BookshelvesResolver],
 })

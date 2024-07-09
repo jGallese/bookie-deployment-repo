@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Book } from 'src/books/entities/book.entity';
 import { Schema as MongooseSchema } from 'mongoose';
@@ -10,15 +10,11 @@ export class Bookshelf {
   _id: MongooseSchema.Types.ObjectId;
 
   @Field(() => String)
-  @Prop({ required: true })
+  @Prop({ required: true, unique: true })
   name: string;
 
-  @Field(() => String)
-  @Prop({ required: true })
-  description: string;
-
-  @Field(() => [ID], { nullable: false })
-  @Prop({ type: String, ref: 'User' })
+  @Field(() => String, { nullable: false })
+  @Prop({ type: String })
   idUser: string;
 
   @Field(() => [Book], { nullable: true })
