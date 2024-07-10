@@ -8,6 +8,7 @@ import { GenreSchema } from './entities/genre.entity';
   imports: [
     MongooseModule.forFeature([{ name: 'Genre', schema: GenreSchema }]),
   ],
+  exports: [BooksService],
   providers: [BooksResolver, BooksService],
 })
 export class BooksModule {}

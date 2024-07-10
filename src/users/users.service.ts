@@ -9,6 +9,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
 import { Category, Interest } from './entities/interest.entity';
+import { BooksService } from 'src/books/books.service';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private booksService: BooksService,
   ) {}
 
   findAll() {
@@ -126,6 +128,11 @@ export class UsersService {
   async addInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
     let keyAuthor = '';
+
+    if (interest.category === Category.GENRE) {
+      const genre = await this.booksService.saveGenre(interest.keyword);
+    }
+
     if (
       interest.category === Category.AUTHOR &&
       !this.isIdAuthor(interest.keyword)

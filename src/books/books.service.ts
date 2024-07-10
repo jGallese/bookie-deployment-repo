@@ -125,4 +125,13 @@ export class BooksService {
     return this.genreModel.find({nameSpanish: { $regex: query, $options: 'i' }});
 
   }
+
+  async saveGenre(genre: string) {
+    const savedGenre = await this.genreModel.findOne({name: genre}).exec();
+    if (savedGenre) {
+      return savedGenre.name;
+    }
+    const newGenre = new this.genreModel({name: genre, nameSpanish: "No traducido"});
+    return genre;
+  }
 }
