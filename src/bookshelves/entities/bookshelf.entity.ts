@@ -1,6 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Book } from 'src/books/entities/book.entity';
 import { Schema as MongooseSchema } from 'mongoose';
 
 @ObjectType()
@@ -17,9 +16,9 @@ export class Bookshelf {
   @Prop({ type: String })
   idUser: string;
 
-  @Field(() => [Book], { nullable: true })
-  @Prop({ type: [{ type: String, ref: 'Book' }], default: [] })
-  books?: Book[];
+  @Field(() => [String], { nullable: true })
+  @Prop({ type: String, default: [] })
+  books?: string[];
 }
 
 export type BookshelfDocument = Bookshelf & Document;
