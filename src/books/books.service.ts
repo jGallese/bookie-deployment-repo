@@ -134,4 +134,8 @@ export class BooksService {
     const newGenre = new this.genreModel({name: genre, nameSpanish: "No traducido"});
     return genre;
   }
+
+  async getAllGenres() {
+    return await this.genreModel.find();
+  }
 }

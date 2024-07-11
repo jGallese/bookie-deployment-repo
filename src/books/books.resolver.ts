@@ -46,4 +46,9 @@ export class BooksResolver {
   searchGenres(@Args('query') query: string) {
     return this.booksService.searchGenres(query);
   }
+
+  @Query(() => [Genre])
+  getAllGenres() {
+    return this.booksService.getAllGenres();
+  }
 }
