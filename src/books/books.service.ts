@@ -29,11 +29,15 @@ export class BooksService {
         ISBN: data.volumeInfo.industryIdentifiers
           ? data.volumeInfo.industryIdentifiers[0].identifier
           : null,
+        pageCount: data.volumeInfo.pageCount,
+        averageRating: data.volumeInfo.averageRating,
+        publishedDate: data.volumeInfo.publishedDate,
+        publisher: data.volumeInfo.publisher,
+        maturityRating: data.volumeInfo.maturityRating,
       };
     }
     for (let i = 0; i < data.items.length; i++) {
       if (data.items[i].volumeInfo.categories) {
-        console.log(data.items[i].volumeInfo.categories);
         this.saveGenres(data.items[i].volumeInfo.categories);
       }
     }
@@ -47,6 +51,11 @@ export class BooksService {
       ISBN: item.volumeInfo.industryIdentifiers
         ? item.volumeInfo.industryIdentifiers[0].identifier
         : null,
+      pageCount: item.volumeInfo.pageCount,
+      averageRating: item.volumeInfo.averageRating,
+      publishedDate: item.volumeInfo.publishedDate,
+      publisher: item.volumeInfo.publisher,
+      maturityRating: item.volumeInfo.maturityRating,
     }));
   }
 
@@ -140,15 +149,11 @@ export class BooksService {
   }
 
   async saveGenre(genre: string) {
-    console.log(genre + "string");
     const savedGenre = await this.genreModel.findOne({ name: genre }).exec();
     if (savedGenre) {
-      
-      console.log(savedGenre.name);
       return savedGenre.name;
     }
-    console.log("Aca estamos");
-    const newGenre = await this.genreModel.create({
+    await this.genreModel.create({
       name: genre,
       nameSpanish: 'No traducido',
     });
