@@ -67,7 +67,7 @@ export class BooksService {
     }));
   }
 
-  async searchBooksByTitle(query: string, startIndex: number) {
+  async searchBooksByTitle(query: string, startIndex: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -78,7 +78,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByGenre(query: string, startIndex: number) {
+  async searchBooksByGenre(query: string, startIndex: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -90,7 +90,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(query: string, startIndex: number) {
+  async searchBooksByAuthor(query: string, startIndex: string) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -140,15 +140,11 @@ export class BooksService {
   }
 
   async saveGenre(genre: string) {
-    console.log(genre + "string");
     const savedGenre = await this.genreModel.findOne({ name: genre }).exec();
     if (savedGenre) {
-      
-      console.log(savedGenre.name);
       return savedGenre.name;
     }
-    console.log("Aca estamos");
-    const newGenre = await this.genreModel.create({
+    await this.genreModel.create({
       name: genre,
       nameSpanish: 'No traducido',
     });
