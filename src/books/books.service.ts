@@ -18,6 +18,7 @@ export class BooksService {
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
     if (!data.items) {
+      this.saveGenres(data.volumeInfo.categories);
       return {
         _id: data.id,
         title: data.volumeInfo.title,
@@ -25,9 +26,16 @@ export class BooksService {
         description: data.volumeInfo.description,
         image: data.volumeInfo.imageLinks,
         categories: data.volumeInfo.categories,
-        ISBN: data.volumeInfo.industryIdentifiers? data.volumeInfo.industryIdentifiers[0].identifier : null,
-
+        ISBN: data.volumeInfo.industryIdentifiers
+          ? data.volumeInfo.industryIdentifiers[0].identifier
+          : null,
       };
+    }
+    for (let i = 0; i < data.items.length; i++) {
+      if (data.items[i].volumeInfo.categories) {
+        console.log(data.items[i].volumeInfo.categories);
+        this.saveGenres(data.items[i].volumeInfo.categories);
+      }
     }
     return data.items.map((item) => ({
       _id: item.id,
@@ -36,12 +44,14 @@ export class BooksService {
       description: item.volumeInfo.description,
       image: item.volumeInfo.imageLinks,
       categories: item.volumeInfo.categories,
-      ISBN: item.volumeInfo.industryIdentifiers? item.volumeInfo.industryIdentifiers[0].identifier : null,
+      ISBN: item.volumeInfo.industryIdentifiers
+        ? item.volumeInfo.industryIdentifiers[0].identifier
+        : null,
     }));
   }
 
   async mapDataAuthorToReturn(response: Response) {
-    const data =  await response.json();
+    const data = await response.json();
     return data.docs.map((item) => ({
       _id: item.key,
       name: item.name,
@@ -50,14 +60,14 @@ export class BooksService {
   }
 
   async mapDataGenreToReturn(response: Response) {
-    const data =  await response.json();
+    const data = await response.json();
     return data.docs.map((item) => ({
       _id: item.key,
       name: item.name,
     }));
   }
 
-  async searchBooksByTitle(query: string, startIndex: string) {
+  async searchBooksByTitle(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -68,7 +78,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByGenre(query: string, startIndex: string) {
+  async searchBooksByGenre(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+subject:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -80,7 +90,7 @@ export class BooksService {
     }
   }
 
-  async searchBooksByAuthor(query: string, startIndex: string) {
+  async searchBooksByAuthor(query: string, startIndex: number) {
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=+inauthor:${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -105,9 +115,11 @@ export class BooksService {
     }
   }
 
-  async searchAuthors(query: string) {	
+  async searchAuthors(query: string) {
     try {
-      const response = await fetch(`https://openlibrary.org/search/authors.json?q=${query}&lang=es`);
+      const response = await fetch(
+        `https://openlibrary.org/search/authors.json?q=${query}&lang=es`,
+      );
       return await this.mapDataAuthorToReturn(response);
     } catch (error) {
       throw new Error(error);
@@ -122,20 +134,34 @@ export class BooksService {
       throw new Error(error);
     }*/
 
-    return this.genreModel.find({nameSpanish: { $regex: query, $options: 'i' }});
-
+    return this.genreModel.find({
+      nameSpanish: { $regex: query, $options: 'i' },
+    });
   }
 
   async saveGenre(genre: string) {
-    const savedGenre = await this.genreModel.findOne({name: genre}).exec();
+    console.log(genre + "string");
+    const savedGenre = await this.genreModel.findOne({ name: genre }).exec();
     if (savedGenre) {
+      
+      console.log(savedGenre.name);
       return savedGenre.name;
     }
-    const newGenre = new this.genreModel({name: genre, nameSpanish: "No traducido"});
+    console.log("Aca estamos");
+    const newGenre = await this.genreModel.create({
+      name: genre,
+      nameSpanish: 'No traducido',
+    });
     return genre;
   }
 
   async getAllGenres() {
     return await this.genreModel.find();
+  }
+
+  async saveGenres(genre: string[]) {
+    for (let i = 0; i < genre.length; i++) {
+      this.saveGenre(genre[i]);
+    }
   }
 }

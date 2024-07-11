@@ -42,7 +42,7 @@ export class Book {
 
   @Prop()
   @Field(() => [String], { nullable: true })
-  category?: string;
+  category?: string[];
 
   @Prop()
   @Field(() => String, { nullable: true })
