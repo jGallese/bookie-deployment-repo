@@ -190,12 +190,12 @@ export class UsersService {
           if (interest.points === -100) {
             interest.points = 0;
             user.interests[i] = interest;
-            await user.save();
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
             return interest;
           } else {
             interest.points += user.interests[i].points;
             user.interests[i] = interest;
-            await user.save();
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
             return interest;
           }
         }
@@ -205,14 +205,14 @@ export class UsersService {
       user.interests.push(interest);
     }
 
-    await user.save();
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 
   async removeInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
     user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
-    await user.save();
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 
