@@ -9,6 +9,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { UserToken } from './dto/token.entity';
 import { Category, Interest } from './entities/interest.entity';
+import { BooksService } from 'src/books/books.service';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private jwtService: JwtService,
+    private booksService: BooksService,
   ) {}
 
   findAll() {
@@ -28,6 +30,12 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  isIdAuthor(input: string) {
+    //Formato id Autor en openLibrary
+    const expID = /^OL\d+A$/;
+    return expID.test(input);
   }
 
   async signup(signUpDto: SignUpDto): Promise<{ user: User; token: string }> {
@@ -117,24 +125,79 @@ export class UsersService {
     return updatedUser;
   }
 
+  async addInterestAuthor(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    if (!user.interests) {
+      user.interests = [interest];
+    } else {
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          if (interest.points === -100) {
+            interest.points = 0;
+            user.interests[i] = interest;
+            await user.save();
+            return interest;
+          } else {
+            interest.points += user.interests[i].points;
+            user.interests[i] = interest;
+            await user.save();
+            return interest;
+          }
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
+      user.interests.push(interest);
+    }
+    user.save();
+    return interest;
+  }
+
   async addInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
+    let keyAuthor = '';
 
+    // if (interest.category === Category.GENRE) {
+    //   const genre = await this.booksService.saveGenre(interest.keyword);
+    // }
+
+    if (
+      interest.category === Category.AUTHOR &&
+      !this.isIdAuthor(interest.keyword)
+    ) {
+      const response = await fetch(
+        `https://openlibrary.org/search/authors.json?q=${interest.keyword}&lang=es`,
+      );
+      const authors = await response.json();
+      let libros = 0;
+      authors.docs.forEach((item) => {
+        if (libros <= item.work_count) {
+          libros = item.work_count;
+          keyAuthor = item.key;
+        }
+      });
+      interest.keyword = keyAuthor;
+      return this.addInterestAuthor(interest, context);
+    }
     //Si el usuario aún no tiene intereses, se crea un array vacío
     if (!user.interests) {
       user.interests = [interest];
     } else {
-
       //Suma los puntos al interes existente
       for (let i = 0; i < user.interests.length; i++) {
         if (user.interests[i].keyword === interest.keyword) {
-          console.log("Hola fede");
-          console.log(user.interests[i].points);
-          console.log(interest.points);
-          interest.points += user.interests[i].points;
-          user.interests[i] = interest;
-          await user.save();
-          return interest;
+          if (interest.points === -100) {
+            interest.points = 0;
+            user.interests[i] = interest;
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
+            return interest;
+          } else {
+            interest.points += user.interests[i].points;
+            user.interests[i] = interest;
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
+            return interest;
+          }
         }
       }
 
@@ -142,14 +205,14 @@ export class UsersService {
       user.interests.push(interest);
     }
 
-    await user.save();
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 
   async removeInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
     user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
-    await user.save();
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 
