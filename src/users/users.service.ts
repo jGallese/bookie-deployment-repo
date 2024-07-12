@@ -125,32 +125,8 @@ export class UsersService {
     return updatedUser;
   }
 
-  async addInterest(interest: Interest, context) {
+  async addInterestAuthor(interest: Interest, context) {
     const user = await this.getMyUser(context);
-    let keyAuthor = '';
-
-    if (interest.category === Category.GENRE) {
-      const genre = await this.booksService.saveGenre(interest.keyword);
-    }
-
-    if (
-      interest.category === Category.AUTHOR &&
-      !this.isIdAuthor(interest.keyword)
-    ) {
-      const response = await fetch(
-        `https://openlibrary.org/search/authors.json?q=${interest.keyword}&lang=es`,
-      );
-      const authors = await response.json();
-      let libros = 0;
-      authors.docs.forEach((item) => {
-        if (libros <= item.work_count) {
-          libros = item.work_count;
-          keyAuthor = item.key;
-        }
-      });
-      interest.keyword = keyAuthor;
-    }
-    //Si el usuario aún no tiene intereses, se crea un array vacío
     if (!user.interests) {
       user.interests = [interest];
     } else {
@@ -174,15 +150,69 @@ export class UsersService {
       // Si no existe agrega el interes a la lista
       user.interests.push(interest);
     }
+    user.save();
+    return interest;
+  }
 
-    await user.save();
+  async addInterest(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    let keyAuthor = '';
+
+    // if (interest.category === Category.GENRE) {
+    //   const genre = await this.booksService.saveGenre(interest.keyword);
+    // }
+
+    if (
+      interest.category === Category.AUTHOR &&
+      !this.isIdAuthor(interest.keyword)
+    ) {
+      const response = await fetch(
+        `https://openlibrary.org/search/authors.json?q=${interest.keyword}&lang=es`,
+      );
+      const authors = await response.json();
+      let libros = 0;
+      authors.docs.forEach((item) => {
+        if (libros <= item.work_count) {
+          libros = item.work_count;
+          keyAuthor = item.key;
+        }
+      });
+      interest.keyword = keyAuthor;
+      return this.addInterestAuthor(interest, context);
+    }
+    //Si el usuario aún no tiene intereses, se crea un array vacío
+    if (!user.interests) {
+      user.interests = [interest];
+    } else {
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          if (interest.points === -100) {
+            interest.points = 0;
+            user.interests[i] = interest;
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
+            return interest;
+          } else {
+            interest.points += user.interests[i].points;
+            user.interests[i] = interest;
+            await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
+            return interest;
+          }
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
+      user.interests.push(interest);
+    }
+
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 
   async removeInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
     user.interests = user.interests.filter((i) => (i.keyword !== interest.keyword && i.category === interest.category) || i.category !== interest.category);
-    await user.save();
+    await this.userModel.updateOne({ _id: user._id }, { interests: user.interests });
     return interest;
   }
 

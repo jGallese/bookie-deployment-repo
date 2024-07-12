@@ -57,12 +57,18 @@ export class UsersResolver {
 
   @Mutation(() => Interest, { name: 'addInterest' })
   @UseGuards(GqlAuthGuard)
-  addInterest(
-    @Args('interest') interest: InterestDto,
-    @Context() context,
-  ) {
+  addInterest(@Args('interest') interest: InterestDto, @Context() context) {
     return this.usersService.addInterest(interest, context);
   }
+
+  // @Mutation(() => [Interest], { name: 'addInterests' })
+  // @UseGuards(GqlAuthGuard)
+  // addInterests(
+  //   @Args('interests') interests: Interest[], // Use InterestDto[] for array
+  //   @Context() context,
+  // ) {
+  //   return this.usersService.addInterests(interests, context);
+  // }
 
   @Mutation(() => Interest, { name: 'removeInterest' })
   @UseGuards(GqlAuthGuard)
