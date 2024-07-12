@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
 import { envs } from 'config/envs.config';
 import { Genre, GenreDocument } from './entities/genre.entity';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,7 +18,7 @@ export class BooksService {
   async mapDataItemsToReturn(response: Response) {
     const data = await response.json();
     if (!data.items) {
-      this.saveGenres(data.volumeInfo.categories);
+      //this.saveGenres(data.volumeInfo.categories);
       return {
         _id: data.id,
         title: data.volumeInfo.title,
@@ -33,7 +33,7 @@ export class BooksService {
     }
     for (let i = 0; i < data.items.length; i++) {
       if (data.items[i].volumeInfo.categories) {
-        this.saveGenres(data.items[i].volumeInfo.categories);
+        //this.saveGenres(data.items[i].volumeInfo.categories);
       }
     }
     return data.items.map((item) => ({
@@ -67,6 +67,7 @@ export class BooksService {
   }
 
   async searchBooksByTitle(query: string, startIndex: string) {
+    console.log(query)
     try {
       const response = await fetch(
         `https://www.googleapis.com/books/v1/volumes?q=${query}&key=${this.googleBooksApiKey}&startIndex=${startIndex}`,
@@ -138,7 +139,7 @@ export class BooksService {
     });
   }
 
-  async saveGenre(genre: string) {
+  /*async saveGenre(genre: string) {
     const savedGenre = await this.genreModel.findOne({ name: genre }).exec();
     if (savedGenre) {
       return savedGenre.name;
@@ -148,15 +149,15 @@ export class BooksService {
       nameSpanish: 'No traducido',
     });
     return genre;
-  }
+  }*/
 
   async getAllGenres() {
     return await this.genreModel.find();
   }
 
-  async saveGenres(genre: string[]) {
+  /*async saveGenres(genre: string[]) {
     for (let i = 0; i < genre.length; i++) {
       this.saveGenre(genre[i]);
     }
-  }
+  }*/
 }
