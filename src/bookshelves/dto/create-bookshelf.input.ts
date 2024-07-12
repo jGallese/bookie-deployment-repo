@@ -5,6 +5,6 @@ export class CreateBookshelfInput {
   @Field()
   name: string;
 
-  @Field(() => [ID], { nullable: true })
+  @Field(() => [String], { nullable: true })
   books?: string[];
 }

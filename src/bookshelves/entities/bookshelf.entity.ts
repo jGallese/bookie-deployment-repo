@@ -17,7 +17,7 @@ export class Bookshelf {
   idUser: string;
 
   @Field(() => [String], { nullable: true })
-  @Prop({ type: String, default: [] })
+  @Prop({ type: [String], default: [] })
   books?: string[];
 }
 
