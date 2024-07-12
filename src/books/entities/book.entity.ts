@@ -41,12 +41,28 @@ export class Book {
   image?: BookImage;
 
   @Prop()
-  @Field(() => [String], { nullable: true })
-  category?: string[];
+  @Field({ nullable: true })
+  pageCount?: number;
 
   @Prop()
   @Field(() => String, { nullable: true })
   ISBN?: string;
+
+  @Prop()
+  @Field({ nullable: true })
+  averageRating?: number;
+
+  @Prop()
+  @Field({ nullable: true })
+  publishedDate?: string;
+
+  @Prop()
+  @Field({ nullable: true })
+  publisher?: string;
+
+  @Prop()
+  @Field({ nullable: true })
+  maturityRating?: string;
 }
 
 export type UserDocument = Book & Document;

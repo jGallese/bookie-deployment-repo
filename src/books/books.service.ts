@@ -29,6 +29,11 @@ export class BooksService {
         ISBN: data.volumeInfo.industryIdentifiers
           ? data.volumeInfo.industryIdentifiers[0].identifier
           : null,
+        pageCount: data.volumeInfo.pageCount,
+        averageRating: data.volumeInfo.averageRating,
+        publishedDate: data.volumeInfo.publishedDate,
+        publisher: data.volumeInfo.publisher,
+        maturityRating: data.volumeInfo.maturityRating,
       };
     }
     for (let i = 0; i < data.items.length; i++) {
@@ -46,6 +51,11 @@ export class BooksService {
       ISBN: item.volumeInfo.industryIdentifiers
         ? item.volumeInfo.industryIdentifiers[0].identifier
         : null,
+      pageCount: item.volumeInfo.pageCount,
+      averageRating: item.volumeInfo.averageRating,
+      publishedDate: item.volumeInfo.publishedDate,
+      publisher: item.volumeInfo.publisher,
+      maturityRating: item.volumeInfo.maturityRating,
     }));
   }
 
@@ -127,37 +137,17 @@ export class BooksService {
   }
 
   async searchGenres(query: string) {
-    /*try {
-      const response = await fetch(`https://openlibrary.org/search/subjects.json?q=${query}&lang=es`);
-      return await this.mapDataGenreToReturn(response);
-    } catch (error) {
-      throw new Error(error);
-    }*/
+   
 
     return this.genreModel.find({
       nameSpanish: { $regex: query, $options: 'i' },
     });
   }
 
-  /*async saveGenre(genre: string) {
-    const savedGenre = await this.genreModel.findOne({ name: genre }).exec();
-    if (savedGenre) {
-      return savedGenre.name;
-    }
-    await this.genreModel.create({
-      name: genre,
-      nameSpanish: 'No traducido',
-    });
-    return genre;
-  }*/
 
   async getAllGenres() {
     return await this.genreModel.find();
   }
 
-  /*async saveGenres(genre: string[]) {
-    for (let i = 0; i < genre.length; i++) {
-      this.saveGenre(genre[i]);
-    }
-  }*/
+ 
 }
