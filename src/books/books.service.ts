@@ -33,7 +33,6 @@ export class BooksService {
     }
     for (let i = 0; i < data.items.length; i++) {
       if (data.items[i].volumeInfo.categories) {
-        console.log(data.items[i].volumeInfo.categories);
         this.saveGenres(data.items[i].volumeInfo.categories);
       }
     }

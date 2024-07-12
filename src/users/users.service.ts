@@ -125,13 +125,42 @@ export class UsersService {
     return updatedUser;
   }
 
+  async addInterestAuthor(interest: Interest, context) {
+    const user = await this.getMyUser(context);
+    if (!user.interests) {
+      user.interests = [interest];
+    } else {
+      //Suma los puntos al interes existente
+      for (let i = 0; i < user.interests.length; i++) {
+        if (user.interests[i].keyword === interest.keyword) {
+          if (interest.points === -100) {
+            interest.points = 0;
+            user.interests[i] = interest;
+            await user.save();
+            return interest;
+          } else {
+            interest.points += user.interests[i].points;
+            user.interests[i] = interest;
+            await user.save();
+            return interest;
+          }
+        }
+      }
+
+      // Si no existe agrega el interes a la lista
+      user.interests.push(interest);
+    }
+    user.save();
+    return interest;
+  }
+
   async addInterest(interest: Interest, context) {
     const user = await this.getMyUser(context);
     let keyAuthor = '';
 
-    if (interest.category === Category.GENRE) {
-      const genre = await this.booksService.saveGenre(interest.keyword);
-    }
+    // if (interest.category === Category.GENRE) {
+    //   const genre = await this.booksService.saveGenre(interest.keyword);
+    // }
 
     if (
       interest.category === Category.AUTHOR &&
@@ -149,6 +178,7 @@ export class UsersService {
         }
       });
       interest.keyword = keyAuthor;
+      return this.addInterestAuthor(interest, context);
     }
     //Si el usuario aún no tiene intereses, se crea un array vacío
     if (!user.interests) {
