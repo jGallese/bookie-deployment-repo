@@ -11,7 +11,7 @@ export class User {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
 
-  @Prop({unique: [true, 'Duplicate Username entered']})
+  @Prop({ unique: [true, 'Duplicate Username entered'] })
   @Field(() => String)
   username: string;
 
@@ -39,10 +39,6 @@ export class User {
   // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Address' })
   // @Field(() => Address)
   // address: Address;
-
-  // @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Bookshelf' })
-  // @Field(() => [Bookshelf], { nullable: 'items' })
-  // idBookshelf: MongooseSchema.Types.ObjectId[];
 
   @Prop()
   @Field(() => [Interest], { nullable: true })
